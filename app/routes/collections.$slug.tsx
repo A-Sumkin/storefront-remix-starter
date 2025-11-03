@@ -12,6 +12,42 @@ import { FilterableProductGrid } from '~/components/products/FilterableProductGr
 import { APP_META_TITLE } from '~/constants';
 import { filteredSearchLoaderFromPagination } from '~/utils/filtered-search-loader';
 import { sdk } from '../graphqlWrapper';
+import { LanguageCode } from '~/generated/graphql';
+import { useRootLoader } from '~/utils/use-root-loader';
+
+function getLocalizedCollectionName(
+  collection: {
+    name: string;
+    translations?: Array<{ languageCode: LanguageCode; name: string }> | null;
+    languageCode?: LanguageCode | null;
+  },
+  locale: string,
+): string {
+  const localeMap: Record<string, LanguageCode> = {
+    en: LanguageCode.En,
+    es: LanguageCode.Es,
+    pt: LanguageCode.Pt,
+    'pt-BR': LanguageCode.PtBr,
+    ru: LanguageCode.Ru,
+  };
+
+  const targetLang = localeMap[locale] ?? LanguageCode.En;
+
+  if (collection.languageCode === targetLang) {
+    return collection.name;
+  }
+
+  if (collection.translations) {
+    const translation = collection.translations.find(
+      (t) => t.languageCode === targetLang,
+    );
+    if (translation) {
+      return translation.name;
+    }
+  }
+
+  return collection.name;
+}
 
 export const meta: MetaFunction = ({ data }) => {
   return [
@@ -35,6 +71,13 @@ const { validator, filteredSearchLoader } = filteredSearchLoaderFromPagination(
 );
 
 export async function loader({ params, request, context }: DataFunctionArgs) {
+  // Проверяем наличие slug
+  if (!params.slug) {
+    throw new Response('Not Found', {
+      status: 404,
+    });
+  }
+
   const {
     result,
     resultWithoutFacetValueFilters,
@@ -78,12 +121,15 @@ export default function CollectionSlug() {
   );
   const submit = useSubmit();
   const { t } = useTranslation();
+  const rootData = useRootLoader();
+  const locale = rootData.locale ?? 'en';
+  const localizedCollectionName = getLocalizedCollectionName(collection, locale);
 
   return (
     <div className="max-w-6xl mx-auto px-4">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl sm:text-5xl font-light tracking-tight text-gray-900 my-8">
-          {collection.name}
+          {localizedCollectionName}
         </h2>
 
         <FiltersButton

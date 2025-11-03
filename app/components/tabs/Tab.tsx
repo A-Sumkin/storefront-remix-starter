@@ -34,7 +34,7 @@ export function Tab({ Icon, text, to }: TabProps) {
               : 'text-gray-400 group-hover:text-gray-500'
           }`}
         />
-        <p className="flex-1">{text}</p>
+        <p className="flex-1" suppressHydrationWarning>{text}</p>
       </NavLink>
     </li>
   );

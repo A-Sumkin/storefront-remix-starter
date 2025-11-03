@@ -21,7 +21,7 @@ export function Breadcrumbs({
           </div>
         </li>
         {items
-          .filter((item) => item.name !== '__root_collection__')
+          .filter((item) => item.name !== '__root_collection__' && item.slug)
           .map((item, index) => (
             <li key={item.name}>
               <div className="flex items-center">

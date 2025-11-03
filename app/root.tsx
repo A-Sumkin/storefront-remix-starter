@@ -31,6 +31,7 @@ import { useActiveOrder } from '~/utils/use-active-order';
 import { useChangeLanguage } from 'remix-i18next';
 import { useTranslation } from 'react-i18next';
 import { getI18NextServer } from '~/i18next.server';
+import { CollectionsDebugInfo } from '~/utils/test-collections-debug';
 
 export const meta: MetaFunction = () => {
   return [{ title: APP_META_TITLE }, { description: APP_META_DESCRIPTION }];
@@ -147,6 +148,7 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <Footer collections={collections}></Footer>
+        {devMode && <CollectionsDebugInfo />}
 
         {devMode && <LiveReload />}
       </body>

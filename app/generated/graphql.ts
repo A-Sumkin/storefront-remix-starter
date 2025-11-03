@@ -3844,6 +3844,13 @@ export type CollectionsQuery = {
       id: string;
       name: string;
       slug: string;
+      languageCode?: LanguageCode | null;
+      translations: Array<{
+        __typename?: 'CollectionTranslation';
+        languageCode: LanguageCode;
+        name: string;
+        slug: string;
+      }>;
       parent?: { __typename?: 'Collection'; name: string } | null;
       featuredAsset?: {
         __typename?: 'Asset';
@@ -3866,6 +3873,13 @@ export type CollectionQuery = {
     id: string;
     name: string;
     slug: string;
+    languageCode?: LanguageCode | null;
+    translations: Array<{
+      __typename?: 'CollectionTranslation';
+      languageCode: LanguageCode;
+      name: string;
+      slug: string;
+    }>;
     breadcrumbs: Array<{
       __typename?: 'CollectionBreadcrumb';
       id: string;
@@ -3877,6 +3891,13 @@ export type CollectionQuery = {
       id: string;
       name: string;
       slug: string;
+      languageCode?: LanguageCode | null;
+      translations: Array<{
+        __typename?: 'CollectionTranslation';
+        languageCode: LanguageCode;
+        name: string;
+        slug: string;
+      }>;
       featuredAsset?: {
         __typename?: 'Asset';
         id: string;
@@ -5360,6 +5381,12 @@ export const CollectionsDocument = gql`
         id
         name
         slug
+        languageCode
+        translations {
+          languageCode
+          name
+          slug
+        }
         parent {
           name
         }
@@ -5377,6 +5404,12 @@ export const CollectionDocument = gql`
       id
       name
       slug
+      languageCode
+      translations {
+        languageCode
+        name
+        slug
+      }
       breadcrumbs {
         id
         name
@@ -5386,6 +5419,12 @@ export const CollectionDocument = gql`
         id
         name
         slug
+        languageCode
+        translations {
+          languageCode
+          name
+          slug
+        }
         featuredAsset {
           id
           preview

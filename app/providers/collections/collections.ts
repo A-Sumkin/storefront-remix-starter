@@ -19,6 +19,12 @@ gql`
         id
         name
         slug
+        languageCode
+        translations {
+          languageCode
+          name
+          slug
+        }
         parent {
           name
         }
@@ -37,6 +43,12 @@ gql`
       id
       name
       slug
+      languageCode
+      translations {
+        languageCode
+        name
+        slug
+      }
       breadcrumbs {
         id
         name
@@ -46,6 +58,12 @@ gql`
         id
         name
         slug
+        languageCode
+        translations {
+          languageCode
+          name
+          slug
+        }
         featuredAsset {
           id
           preview

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  typesense:
+    image: typesense/typesense:0.25.2
+    container_name: typesense
+    ports:
+      - "8108:8108"
+    volumes:
+      - typesense-data:/data
+    command: '--data-dir /data --api-key=${TYPESENSE_API_KEY} --enable-cors'
+    environment:
+      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY:-xyz}
+    restart: unless-stopped
+    networks:
+      - default
+
+volumes:
+  typesense-data:
+
+networks:
+  default:
+    name: storefront-network
+

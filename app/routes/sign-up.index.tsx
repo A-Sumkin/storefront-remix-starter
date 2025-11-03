@@ -12,12 +12,14 @@ import { useTranslation } from 'react-i18next';
 import { getFixedT } from '~/i18next.server';
 
 export async function action({ request }: ActionFunctionArgs) {
-  if (API_URL === DEMO_API_URL) {
-    const t = await getFixedT(request);
-
-    return {
-      form: t('vendure.registrationError'),
-    };
+  // Проверяем, используется ли демо-API (readonlydemo.vendure.io)
+  // Для локального Vendure регистрация должна работать
+  // Блокируем только для реального демо-API, не для localhost
+  if (API_URL.includes('readonlydemo.vendure.io')) {
+    // Для демо-API регистрация недоступна
+    return json({
+      form: 'vendure.registrationError',
+    });
   }
 
   const body = await request.formData();
@@ -31,8 +33,22 @@ export async function action({ request }: ActionFunctionArgs) {
   if (result.__typename === 'Success') {
     return redirect('/sign-up/success');
   } else {
+    // Возвращаем message из ответа Vendure (уже переведенный)
+    // Если message отсутствует, используем errorCode
+    const errorMessage = result.message || result.errorCode || 'Unknown error';
+    
+    // Логируем ошибку для отладки (только в development)
+    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
+      console.log('[Registration Error]', {
+        __typename: result.__typename,
+        errorCode: result.errorCode,
+        message: result.message,
+        finalErrorMessage: errorMessage,
+      });
+    }
+    
     const formError: RegisterValidationErrors = {
-      form: result.errorCode,
+      form: errorMessage,
     };
     return json(formError, { status: 401 });
   }
@@ -189,7 +205,9 @@ export default function SignUpPage() {
                         {t('account.createError')}
                       </h3>
                       <p className="text-sm text-red-700 mt-2">
-                        {formErrors.form}
+                        {formErrors.form && formErrors.form.startsWith('vendure.') 
+                          ? t(formErrors.form)
+                          : formErrors.form}
                       </p>
                     </div>
                   </div>

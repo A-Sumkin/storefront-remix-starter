@@ -115,6 +115,10 @@ export default async function handleRequest(
       ...i18n,
       lng,
     });
+  
+  // Убеждаемся, что переводы загружены на сервере
+  // Загружаем все доступные пространства имен (translation - дефолтное)
+  await instance.loadNamespaces(['translation']);
 
   const jsx = (
     <I18nextProvider i18n={instance}>

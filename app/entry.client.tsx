@@ -16,8 +16,16 @@ async function hydrate() {
     .init({
       ...i18n, // spread the configuration
       // This function detects the namespaces your routes rendered while SSR use
-      ns: getInitialNamespaces(),
-      backend: { loadPath: '/locales/{{lng}}.json' },
+      // Если namespaces пустой, используем 'translation' по умолчанию
+      ns: getInitialNamespaces().length > 0 ? getInitialNamespaces() : ['translation'],
+      defaultNS: 'translation',
+      backend: { 
+        loadPath: '/locales/{{lng}}.json',
+        // Отключаем кэширование только в development
+        ...(process.env.NODE_ENV === 'development' 
+          ? { reloadInterval: false }
+          : {}),
+      },
       detection: {
         // Here only enable htmlTag detection, we'll detect the language only
         // server-side with remix-i18next, by using the `<html lang>` attribute
@@ -27,7 +35,32 @@ async function hydrate() {
         // on the browser, so we disable it
         caches: [],
       },
+      // Убеждаемся, что переводы загружаются перед рендерингом
+      load: 'languageOnly',
     });
+  
+  // Ждем загрузки переводов
+  // Используем 'translation' как дефолтный namespace
+  const namespaces = getInitialNamespaces().length > 0 ? getInitialNamespaces() : ['translation'];
+  
+  // Загружаем namespaces и ждем завершения
+  await i18next.loadNamespaces(namespaces);
+  
+  // Дополнительная проверка - убеждаемся, что ресурсы действительно загружены
+  const detectedLanguage = i18next.language || i18next.options.lng || 'en';
+  const defaultNamespace = namespaces[0] || 'translation';
+  const resourceBundle = i18next.getResourceBundle(detectedLanguage, defaultNamespace);
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[i18n] Loading translations for:', {
+      detectedLanguage,
+      namespaces,
+      defaultNamespace,
+      hasResources: !!resourceBundle,
+      resourceKeys: resourceBundle ? Object.keys(resourceBundle) : [],
+      footerKeys: resourceBundle?.footer ? Object.keys(resourceBundle.footer) : [],
+    });
+  }
 
   startTransition(() => {
     hydrateRoot(

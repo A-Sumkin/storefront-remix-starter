@@ -14,7 +14,8 @@
     "start:cf": "cross-env NODE_ENV=production yarn run dev:wrangler",
     "start": "remix-serve build",
     "generate": "graphql-codegen --config codegen.yml",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "add-collection-translations": "tsx scripts/add-collection-translations.ts"
   },
   "dependencies": {
     "@graphql-codegen/typescript-generic-sdk": "^3.0.4",

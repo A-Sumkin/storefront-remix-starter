@@ -6,6 +6,7 @@ const languagesServer: { [key: string]: () => any } = {
   es: () => import('../public/locales/es.json'),
   pt: () => import('../public/locales/pt.json'),
   'pt-BR': () => import('../public/locales/pt-BR.json'),
+  ru: () => import('../public/locales/ru.json'),
 };
 
 export function findLanguageJSON(language: string, namespace: string) {
